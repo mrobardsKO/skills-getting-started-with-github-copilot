@@ -52,6 +52,45 @@ def test_signup_duplicate_returns_bad_request(client):
     assert "detail" in body
 
 
+def test_signup_normalizes_email_case(client):
+    activity_name = "Chess Club"
+    email_upper = "New.Student@Mergington.EDU"
+    email_normalized = email_upper.strip().lower()
+    endpoint = f"/activities/{quote(activity_name, safe='')}/signup"
+
+    response = client.post(endpoint, params={"email": email_upper})
+
+    body = response.json()
+    assert response.status_code == 200
+    assert email_normalized in activities[activity_name]["participants"]
+
+
+def test_signup_duplicate_case_insensitive_returns_bad_request(client):
+    activity_name = "Chess Club"
+    email_upper = "Michael@Mergington.EDU"
+    endpoint = f"/activities/{quote(activity_name, safe='')}/signup"
+
+    response = client.post(endpoint, params={"email": email_upper})
+
+    body = response.json()
+    assert response.status_code == 400
+    assert "detail" in body
+
+
+def test_unregister_normalizes_email_case(client):
+    activity_name = "Chess Club"
+    email_upper = "Michael@Mergington.EDU"
+    endpoint = (
+        f"/activities/{quote(activity_name, safe='')}/participants/{quote(email_upper, safe='')}"
+    )
+
+    response = client.delete(endpoint)
+
+    body = response.json()
+    assert response.status_code == 200
+    assert "michael@mergington.edu" not in activities[activity_name]["participants"]
+
+
 def test_unregister_removes_participant(client):
     activity_name = "Chess Club"
     email = "michael@mergington.edu"

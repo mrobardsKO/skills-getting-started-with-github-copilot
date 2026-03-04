@@ -95,6 +95,9 @@ def signup_for_activity(activity_name: str, email: str):
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
 
+    # Normalize email to prevent case/whitespace bypass
+    email = email.strip().lower()
+
     # Get the specific activity
     activity = activities[activity_name]
 
@@ -113,6 +116,9 @@ def unregister_from_activity(activity_name: str, email: str):
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Normalize email to prevent case/whitespace bypass
+    email = email.strip().lower()
 
     # Get the specific activity
     activity = activities[activity_name]
