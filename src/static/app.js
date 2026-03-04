@@ -27,37 +27,82 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsHtml =
-          details.participants.length > 0
-            ? `<ul class="participants-list">${details.participants
-                .map(
-                  (participant) => `
-                  <li class="participant-item">
-                    <span class="participant-email">${participant}</span>
-                    <button
-                      type="button"
-                      class="participant-remove-btn"
-                      data-activity="${name}"
-                      data-email="${participant}"
-                      aria-label="Unregister ${participant} from ${name}"
-                      title="Unregister participant"
-                    >🗑️</button>
-                  </li>`
-                )
-                .join("")}</ul>`
-            : '<p class="no-participants">No one has signed up yet.</p>';
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          <div class="participants-section">
-            <p class="participants-title"><strong>Participants</strong></p>
-            ${participantsHtml}
-          </div>
-        `;
+        // Activity title
+        const titleEl = document.createElement("h4");
+        titleEl.textContent = name;
+        activityCard.appendChild(titleEl);
 
+        // Activity description
+        const descriptionEl = document.createElement("p");
+        descriptionEl.textContent = details.description;
+        activityCard.appendChild(descriptionEl);
+
+        // Activity schedule
+        const scheduleEl = document.createElement("p");
+        const scheduleStrong = document.createElement("strong");
+        scheduleStrong.textContent = "Schedule:";
+        scheduleEl.appendChild(scheduleStrong);
+        scheduleEl.append(" " + details.schedule);
+        activityCard.appendChild(scheduleEl);
+
+        // Availability
+        const availabilityEl = document.createElement("p");
+        const availabilityStrong = document.createElement("strong");
+        availabilityStrong.textContent = "Availability:";
+        availabilityEl.appendChild(availabilityStrong);
+        availabilityEl.append(` ${spotsLeft} spots left`);
+        activityCard.appendChild(availabilityEl);
+
+        // Participants section
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+
+        const participantsTitle = document.createElement("p");
+        participantsTitle.className = "participants-title";
+        const participantsTitleStrong = document.createElement("strong");
+        participantsTitleStrong.textContent = "Participants";
+        participantsTitle.appendChild(participantsTitleStrong);
+        participantsSection.appendChild(participantsTitle);
+
+        if (details.participants.length > 0) {
+          const participantsListEl = document.createElement("ul");
+          participantsListEl.className = "participants-list";
+
+          details.participants.forEach((participant) => {
+            const itemEl = document.createElement("li");
+            itemEl.className = "participant-item";
+
+            const emailSpan = document.createElement("span");
+            emailSpan.className = "participant-email";
+            emailSpan.textContent = participant;
+            itemEl.appendChild(emailSpan);
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "participant-remove-btn";
+            removeButton.dataset.activity = name;
+            removeButton.dataset.email = participant;
+            removeButton.setAttribute(
+              "aria-label",
+              `Unregister ${participant} from ${name}`
+            );
+            removeButton.title = "Unregister participant";
+            removeButton.textContent = "🗑️";
+
+            itemEl.appendChild(removeButton);
+            participantsListEl.appendChild(itemEl);
+          });
+
+          participantsSection.appendChild(participantsListEl);
+        } else {
+          const noParticipantsEl = document.createElement("p");
+          noParticipantsEl.className = "no-participants";
+          noParticipantsEl.textContent = "No one has signed up yet.";
+          participantsSection.appendChild(noParticipantsEl);
+        }
+
+        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
