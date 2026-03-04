@@ -159,7 +159,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   activitiesList.addEventListener("click", async (event) => {
-    const removeButton = event.target.closest(".participant-remove-btn");
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const removeButton = target.closest(".participant-remove-btn");
     if (!removeButton) {
       return;
     }
